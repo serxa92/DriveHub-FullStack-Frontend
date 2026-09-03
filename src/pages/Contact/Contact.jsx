@@ -20,6 +20,7 @@ const Contact = () => {
     setIsSubmitted(true);
     reset();
 
+    // Ocultamos el aviso cuando el usuario ya ha podido verlo.
     setTimeout(() => {
       setIsSubmitted(false);
     }, 4000);

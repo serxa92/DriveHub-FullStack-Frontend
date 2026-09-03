@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 const FavoritesContext = createContext();
 
 export const FavoritesProvider = ({ children }) => {
+  // Guardamos el coche completo para no tener que pedirlo otra vez.
   const [favorites, setFavorites] = useState(() => {
     const storedFavorites = localStorage.getItem("drivehub-favorites");
     return storedFavorites ? JSON.parse(storedFavorites) : [];

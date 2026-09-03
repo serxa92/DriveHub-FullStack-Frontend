@@ -18,6 +18,7 @@ const CarDetail = () => {
   const { t } = useLanguage();
   const location = useLocation();
 
+  // Volvemos al listado desde el que se abrió el coche.
   const backUrl = location.state?.from || "/";
 
   if (loading) {

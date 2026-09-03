@@ -14,10 +14,12 @@ const Home = () => {
   const [yearFilter, setYearFilter] = useState("");
   const [mileageFilter, setMileageFilter] = useState("");
 
+  // Sacamos las marcas del propio inventario para evitar otra lista.
   const brands = useMemo(() => {
     return [...new Set(cars.map((car) => car.brand))].sort();
   }, [cars]);
 
+  // Los filtros vacíos dejan pasar todos los coches.
   const filteredCars = useMemo(() => {
     return cars.filter((car) => {
       const brandMatch = !brandFilter || car.brand === brandFilter;

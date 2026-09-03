@@ -11,6 +11,7 @@ const CarCard = ({ car }) => {
   const favorite = isFavorite(car._id);
   const location = useLocation();
 
+  // Evitamos que el botón de favoritos abra el detalle.
   const handleFavoriteClick = (event) => {
     event.preventDefault();
     event.stopPropagation();

@@ -1,0 +1,151 @@
+.admin-page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 5rem 1.5rem;
+}
+
+.admin-page__header {
+  max-width: 760px;
+  margin-bottom: 3rem;
+}
+
+.admin-page__header > span {
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.admin-page__header h1 {
+  margin-top: 1rem;
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+}
+
+.admin-page__header p {
+  margin-top: 1.4rem;
+  color: var(--color-muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.admin-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.admin-summary__card,
+.admin-placeholder {
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-summary__card {
+  min-width: 0;
+  padding: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-summary__card > svg {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  padding: 0.65rem;
+  border-radius: 14px;
+  background: rgba(225, 29, 72, 0.12);
+  color: var(--color-accent);
+}
+
+.admin-summary__card div {
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.admin-summary__card span {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-summary__card strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-placeholder {
+  margin-top: 2rem;
+  padding: 2rem;
+  background:
+    linear-gradient(135deg, rgba(225, 29, 72, 0.12), transparent),
+    rgba(255, 255, 255, 0.04);
+}
+
+.admin-placeholder h2 {
+  font-size: 1.5rem;
+  letter-spacing: -0.04em;
+}
+
+.admin-placeholder p {
+  max-width: 680px;
+  margin-top: 0.8rem;
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+.admin-module {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-module:hover {
+  border-color: rgba(225, 29, 72, 0.45);
+  transform: translateY(-2px);
+}
+
+.admin-module > svg {
+  width: 48px;
+  height: 48px;
+  padding: 0.75rem;
+  border-radius: 16px;
+  background: rgba(225, 29, 72, 0.14);
+  color: var(--color-accent);
+}
+
+.admin-module > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+
+@media (max-width: 800px) {
+  .admin-page {
+    padding: 3.5rem 1rem;
+  }
+
+  .admin-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-module {
+    grid-template-columns: auto 1fr;
+  }
+
+  .admin-module > span {
+    grid-column: 2;
+  }
+}
