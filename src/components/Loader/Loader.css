@@ -1,0 +1,11 @@
+.loader {
+  min-height: calc(100vh - 76px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+
+  color: var(--color-muted);
+  font-weight: 800;
+}
