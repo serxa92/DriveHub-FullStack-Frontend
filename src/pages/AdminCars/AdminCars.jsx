@@ -1,7 +1,10 @@
-import { FiArrowLeft, FiImage, FiPlus } from "react-icons/fi";
+import { useState } from "react";
+import { FiArrowLeft, FiEdit2, FiImage, FiPlus, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useCars } from "../../hooks/useCars";
+import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { deleteCar } from "../../services/carService";
 import { capitalize } from "../../utils/capitalize";
 import "./AdminCars.css";
 
@@ -12,8 +15,11 @@ const getCover = (car) => {
 };
 
 const AdminCars = () => {
-  const { cars, loading, error } = useCars();
+  const { cars, loading, error, removeCarFromList } = useCars();
+  const { authFetch } = useAuth();
   const { language, t } = useLanguage();
+  const [deletingId, setDeletingId] = useState("");
+  const [deleteError, setDeleteError] = useState("");
   const locale = language === "es" ? "es-ES" : "en-US";
 
   const formatNumber = (value) =>
@@ -39,6 +45,30 @@ const AdminCars = () => {
     Sold: t.carStatusSold,
   };
 
+  const handleDelete = async (car) => {
+    if (deletingId) return;
+
+    const carName = `${capitalize(car.brand)} ${capitalize(car.model)}`;
+    const confirmed = window.confirm(
+      t.carDeleteConfirm.replace("{{car}}", carName),
+    );
+
+    if (!confirmed) return;
+
+    setDeleteError("");
+    setDeletingId(car._id);
+
+    try {
+      await deleteCar(car._id, authFetch);
+      // Quitamos el coche solo cuando el backend confirma el borrado.
+      removeCarFromList(car._id);
+    } catch (deleteRequestError) {
+      setDeleteError(deleteRequestError.message || t.carDeleteError);
+    } finally {
+      setDeletingId("");
+    }
+  };
+
   return (
     <main className="admin-cars">
       <Link className="admin-cars__back" to="/admin">
@@ -58,6 +88,12 @@ const AdminCars = () => {
           {t.adminNewCar}
         </Link>
       </header>
+
+      {deleteError && (
+        <p className="admin-cars__message admin-cars__message--error" role="alert">
+          {deleteError}
+        </p>
+      )}
 
       {loading ? (
         <section className="admin-cars__state" aria-live="polite">
@@ -97,6 +133,7 @@ const AdminCars = () => {
                   <th scope="col">{t.carFuel}</th>
                   <th scope="col">{t.carTransmission}</th>
                   <th scope="col">{t.carStatus}</th>
+                  <th scope="col">{t.carActions}</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,6 +174,27 @@ const AdminCars = () => {
                         >
                           {enumLabels[car.status] || car.status}
                         </span>
+                      </td>
+                      <td>
+                        <div className="admin-cars__actions">
+                          <Link
+                            className="admin-cars__edit"
+                            to={`/admin/cars/${car._id}/edit`}
+                          >
+                            <FiEdit2 aria-hidden="true" />
+                            {t.edit}
+                          </Link>
+                          <button
+                            className="admin-cars__delete"
+                            type="button"
+                            onClick={() => handleDelete(car)}
+                            disabled={Boolean(deletingId)}
+                            aria-busy={deletingId === car._id}
+                          >
+                            <FiTrash2 aria-hidden="true" />
+                            {deletingId === car._id ? t.deleting : t.delete}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

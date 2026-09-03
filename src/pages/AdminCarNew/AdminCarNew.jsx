@@ -13,12 +13,14 @@ const AdminCarNew = () => {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [coverIndex, setCoverIndex] = useState(0);
   const currentYear = new Date().getFullYear();
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     defaultValues: {
       fuel: "Gasoline",
@@ -38,6 +40,13 @@ const AdminCarNew = () => {
     validate: {
       required: (files) => files?.length > 0 || t.formRequired,
       maxLength: (files) => files?.length <= 10 || t.carImagesMax,
+      size: (files) =>
+        Array.from(files || []).every((file) => file.size <= 5 * 1024 * 1024) ||
+        t.carImagesSize,
+      format: (files) =>
+        Array.from(files || []).every((file) =>
+          ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+        ) || t.carImagesFormat,
     },
   });
 
@@ -45,6 +54,7 @@ const AdminCarNew = () => {
     // Mantenemos el input conectado con react-hook-form.
     imagesRegistration.onChange(event);
     const files = Array.from(event.target.files || []);
+    setCoverIndex(0);
     setImagePreviews(
       files.map((file) => ({ file, url: URL.createObjectURL(file) })),
     );
@@ -53,15 +63,27 @@ const AdminCarNew = () => {
   const onSubmit = async (data) => {
     setApiError("");
     setIsSuccess(false);
+    setIsCreating(true);
 
     try {
-      await createCar(data, authFetch);
+      // La portada debe ser la primera imagen que reciba el backend.
+      const images = imagePreviews.map((preview) => preview.file);
+      const orderedImages = [
+        images[coverIndex],
+        ...images.filter((_, index) => index !== coverIndex),
+      ].filter(Boolean);
+
+      await createCar({ ...data, images: orderedImages }, authFetch);
       setIsSuccess(true);
       // Dejamos que se vea la confirmación antes de volver.
       await new Promise((resolve) => setTimeout(resolve, 900));
       navigate("/admin/cars", { replace: true });
     } catch (error) {
-      setApiError(error.message);
+      setApiError(
+        error.code === "REQUEST_TIMEOUT" ? t.carCreateTimeout : error.message,
+      );
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -113,6 +135,7 @@ const AdminCarNew = () => {
                 type="number"
                 {...register("year", {
                   required: t.formRequired,
+                  valueAsNumber: true,
                   min: { value: 1900, message: t.carYearInvalid },
                   max: { value: currentYear + 1, message: t.carYearInvalid },
                 })}
@@ -128,6 +151,7 @@ const AdminCarNew = () => {
                 min="0"
                 {...register("mileage", {
                   required: t.formRequired,
+                  valueAsNumber: true,
                   min: { value: 0, message: t.carNumberInvalid },
                 })}
               />
@@ -140,8 +164,10 @@ const AdminCarNew = () => {
                 id="price"
                 type="number"
                 min="1"
+                step="any"
                 {...register("price", {
                   required: t.formRequired,
+                  valueAsNumber: true,
                   min: { value: 1, message: t.carPriceInvalid },
                 })}
               />
@@ -207,7 +233,7 @@ const AdminCarNew = () => {
               id="images"
               className="admin-car-form__file"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               multiple
               name={imagesRegistration.name}
               ref={imagesRegistration.ref}
@@ -220,9 +246,19 @@ const AdminCarNew = () => {
           {imagePreviews.length > 0 && (
             <div className="admin-car-form__previews">
               {imagePreviews.map((preview, index) => (
-                <figure key={`${preview.file.name}-${preview.file.lastModified}`}>
-                  <img src={preview.url} alt={preview.file.name} />
-                  {index === 0 && <span>{t.carCover}</span>}
+                <figure
+                  className={index === coverIndex ? "admin-car-form__preview--cover" : ""}
+                  key={`${preview.file.name}-${preview.file.lastModified}-${index}`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setCoverIndex(index)}
+                    aria-label={`${t.carSetCover}: ${preview.file.name}`}
+                    aria-pressed={index === coverIndex}
+                  >
+                    <img src={preview.url} alt={preview.file.name} />
+                  </button>
+                  {index === coverIndex && <span>{t.carCover}</span>}
                   <figcaption>{preview.file.name}</figcaption>
                 </figure>
               ))}
@@ -245,9 +281,9 @@ const AdminCarNew = () => {
 
         <div className="admin-car-form__actions">
           <Link to="/admin/cars">{t.cancel}</Link>
-          <button type="submit" disabled={isSubmitting || isSuccess}>
+          <button type="submit" disabled={isCreating || isSuccess}>
             <FiSave aria-hidden="true" />
-            {isSubmitting ? t.carCreating : t.carCreate}
+            {isCreating ? t.carCreating : t.carCreate}
           </button>
         </div>
       </form>

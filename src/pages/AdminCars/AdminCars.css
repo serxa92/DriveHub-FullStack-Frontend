@@ -136,7 +136,7 @@
 
 .admin-cars table {
   width: 100%;
-  min-width: 1080px;
+  min-width: 1300px;
   border-collapse: collapse;
 }
 
@@ -222,6 +222,63 @@
 .admin-car-status--sold {
   background: rgba(225, 29, 72, 0.12);
   color: #fb7185;
+}
+
+.admin-cars__message {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.admin-cars__message--error {
+  border-color: rgba(225, 29, 72, 0.35);
+  background: rgba(225, 29, 72, 0.08);
+  color: #fb7185;
+}
+
+.admin-cars__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-cars__edit,
+.admin-cars__delete {
+  min-height: 36px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-cars__edit:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.admin-cars__delete {
+  color: #fb7185;
+}
+
+.admin-cars__delete:hover:not(:disabled) {
+  border-color: #fb7185;
+}
+
+.admin-cars__delete:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 @keyframes admin-cars-spin {

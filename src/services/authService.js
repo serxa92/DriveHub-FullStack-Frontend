@@ -43,6 +43,12 @@ export const registerUser = async ({ username, email, password, image }) => {
 // Añadimos el Bearer sin repetirlo en cada servicio.
 export const authenticatedFetch = (path, token, options = {}) => {
   const headers = new Headers(options.headers);
+
+  // El navegador debe generar el boundary cuando enviamos FormData.
+  if (options.body instanceof FormData) {
+    headers.delete("Content-Type");
+  }
+
   headers.set("Authorization", `Bearer ${token}`);
 
   return fetch(`${API_URL}${path}`, { ...options, headers });

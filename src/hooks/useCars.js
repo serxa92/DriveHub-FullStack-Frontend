@@ -19,5 +19,9 @@ export const useCars = () => {
       });
   }, []);
 
-  return { cars, loading, error };
+  const removeCarFromList = (id) => {
+    setCars((currentCars) => currentCars.filter((car) => car._id !== id));
+  };
+
+  return { cars, loading, error, removeCarFromList };
 };

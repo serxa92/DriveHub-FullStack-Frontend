@@ -9,6 +9,7 @@ import Register from "./pages/Register/Register";
 import Admin from "./pages/Admin/Admin";
 import AdminCars from "./pages/AdminCars/AdminCars";
 import AdminCarNew from "./pages/AdminCarNew/AdminCarNew";
+import AdminCarEdit from "./pages/AdminCarEdit/AdminCarEdit";
 import Navbar from "./components/Navbar/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
@@ -35,6 +36,7 @@ const App = () => {
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/cars" element={<AdminCars />} />
             <Route path="/admin/cars/new" element={<AdminCarNew />} />
+            <Route path="/admin/cars/:id/edit" element={<AdminCarEdit />} />
           </Route>
         </Route>
       </Routes>

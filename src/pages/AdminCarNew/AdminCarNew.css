@@ -177,6 +177,26 @@
   border: 1px solid var(--color-border);
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.2);
+  transition: border-color 0.2s ease;
+}
+
+.admin-car-form__previews .admin-car-form__preview--cover {
+  border-color: var(--color-accent);
+}
+
+.admin-car-form__previews figure > button {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  display: block;
+  background: none;
+  cursor: pointer;
+}
+
+.admin-car-form__previews figure > button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .admin-car-form__previews img {
