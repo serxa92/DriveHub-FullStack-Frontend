@@ -1,4 +1,11 @@
-import { FiActivity, FiArrowRight, FiLock, FiTruck, FiUser } from "react-icons/fi";
+import {
+  FiActivity,
+  FiArrowRight,
+  FiLock,
+  FiTruck,
+  FiUser,
+  FiUsers,
+} from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -42,17 +49,31 @@ const Admin = () => {
         </article>
       </section>
 
-      <Link className="admin-placeholder admin-module" to="/admin/cars">
-        <FiTruck aria-hidden="true" />
-        <div>
-          <h2>{t.adminInventoryTitle}</h2>
-          <p>{t.adminInventoryText}</p>
-        </div>
-        <span>
-          {t.adminInventoryOpen}
-          <FiArrowRight aria-hidden="true" />
-        </span>
-      </Link>
+      <section className="admin-modules">
+        <Link className="admin-placeholder admin-module" to="/admin/cars">
+          <FiTruck aria-hidden="true" />
+          <div>
+            <h2>{t.adminInventoryTitle}</h2>
+            <p>{t.adminInventoryText}</p>
+          </div>
+          <span>
+            {t.adminInventoryOpen}
+            <FiArrowRight aria-hidden="true" />
+          </span>
+        </Link>
+
+        <Link className="admin-placeholder admin-module" to="/admin/clients">
+          <FiUsers aria-hidden="true" />
+          <div>
+            <h2>{t.adminClientsModuleTitle}</h2>
+            <p>{t.adminClientsModuleText}</p>
+          </div>
+          <span>
+            {t.adminClientsOpen}
+            <FiArrowRight aria-hidden="true" />
+          </span>
+        </Link>
+      </section>
     </main>
   );
 };

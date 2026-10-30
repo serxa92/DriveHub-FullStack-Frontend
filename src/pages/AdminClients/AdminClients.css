@@ -1,0 +1,51 @@
+.admin-clients table {
+  min-width: 1120px;
+}
+
+.admin-clients__contact {
+  color: var(--color-text);
+  transition: color 0.2s ease;
+}
+
+.admin-clients__contact:hover {
+  color: var(--color-accent);
+}
+
+.admin-clients__cars {
+  max-width: 280px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  white-space: normal;
+}
+
+.admin-clients__cars span,
+.admin-client-status {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  display: inline-flex;
+  background: rgba(161, 161, 170, 0.12);
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.admin-client-status--interested {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+}
+
+.admin-client-status--contacted {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fcd34d;
+}
+
+.admin-client-status--negotiating {
+  background: rgba(168, 85, 247, 0.12);
+  color: #d8b4fe;
+}
+
+.admin-client-status--customer {
+  background: rgba(34, 197, 94, 0.12);
+  color: #86efac;
+}

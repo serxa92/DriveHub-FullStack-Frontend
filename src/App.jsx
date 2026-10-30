@@ -10,6 +10,8 @@ import Admin from "./pages/Admin/Admin";
 import AdminCars from "./pages/AdminCars/AdminCars";
 import AdminCarNew from "./pages/AdminCarNew/AdminCarNew";
 import AdminCarEdit from "./pages/AdminCarEdit/AdminCarEdit";
+import AdminClients from "./pages/AdminClients/AdminClients";
+import AdminClientEdit from "./pages/AdminClientEdit/AdminClientEdit";
 import Navbar from "./components/Navbar/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
@@ -37,6 +39,8 @@ const App = () => {
             <Route path="/admin/cars" element={<AdminCars />} />
             <Route path="/admin/cars/new" element={<AdminCarNew />} />
             <Route path="/admin/cars/:id/edit" element={<AdminCarEdit />} />
+            <Route path="/admin/clients" element={<AdminClients />} />
+            <Route path="/admin/clients/:id/edit" element={<AdminClientEdit />} />
           </Route>
         </Route>
       </Routes>

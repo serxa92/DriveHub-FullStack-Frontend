@@ -101,6 +101,16 @@
   line-height: 1.7;
 }
 
+.admin-modules {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-modules .admin-placeholder {
+  margin-top: 0;
+}
+
 .admin-module {
   display: grid;
   grid-template-columns: auto 1fr auto;
