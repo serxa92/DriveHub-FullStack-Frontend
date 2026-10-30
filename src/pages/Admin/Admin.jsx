@@ -1,6 +1,7 @@
 import {
   FiActivity,
   FiArrowRight,
+  FiDollarSign,
   FiLock,
   FiTruck,
   FiUser,
@@ -70,6 +71,18 @@ const Admin = () => {
           </div>
           <span>
             {t.adminClientsOpen}
+            <FiArrowRight aria-hidden="true" />
+          </span>
+        </Link>
+
+        <Link className="admin-placeholder admin-module" to="/admin/sales">
+          <FiDollarSign aria-hidden="true" />
+          <div>
+            <h2>{t.adminSalesModuleTitle}</h2>
+            <p>{t.adminSalesModuleText}</p>
+          </div>
+          <span>
+            {t.adminSalesOpen}
             <FiArrowRight aria-hidden="true" />
           </span>
         </Link>

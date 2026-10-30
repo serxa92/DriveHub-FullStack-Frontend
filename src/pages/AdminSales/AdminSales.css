@@ -1,0 +1,28 @@
+.admin-sales table {
+  min-width: 1180px;
+}
+
+.admin-sale-status {
+  padding: 0.38rem 0.65rem;
+  border-radius: 999px;
+  display: inline-flex;
+  background: rgba(161, 161, 170, 0.12);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.admin-sale-status--pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fcd34d;
+}
+
+.admin-sale-status--completed {
+  background: rgba(34, 197, 94, 0.11);
+  color: #86efac;
+}
+
+.admin-sale-status--cancelled {
+  background: rgba(225, 29, 72, 0.12);
+  color: #fb7185;
+}

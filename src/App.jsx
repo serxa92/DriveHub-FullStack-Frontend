@@ -12,6 +12,8 @@ import AdminCarNew from "./pages/AdminCarNew/AdminCarNew";
 import AdminCarEdit from "./pages/AdminCarEdit/AdminCarEdit";
 import AdminClients from "./pages/AdminClients/AdminClients";
 import AdminClientEdit from "./pages/AdminClientEdit/AdminClientEdit";
+import AdminSales from "./pages/AdminSales/AdminSales";
+import AdminSaleForm from "./pages/AdminSaleForm/AdminSaleForm";
 import Navbar from "./components/Navbar/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
@@ -41,6 +43,9 @@ const App = () => {
             <Route path="/admin/cars/:id/edit" element={<AdminCarEdit />} />
             <Route path="/admin/clients" element={<AdminClients />} />
             <Route path="/admin/clients/:id/edit" element={<AdminClientEdit />} />
+            <Route path="/admin/sales" element={<AdminSales />} />
+            <Route path="/admin/sales/new" element={<AdminSaleForm />} />
+            <Route path="/admin/sales/:id/edit" element={<AdminSaleForm />} />
           </Route>
         </Route>
       </Routes>

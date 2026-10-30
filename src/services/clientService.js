@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Algunos errores pueden llegar como texto en vez de JSON.
 const readResponse = async (response) => {
   const body = await response.text();
@@ -22,6 +24,27 @@ const request = async (path, authFetch, options = {}) => {
         data.message ||
         data.error ||
         `No se pudo completar la solicitud (${response.status})`,
+    );
+  }
+
+  return data.data || data;
+};
+
+export const createContactClient = async (client) => {
+  const response = await fetch(`${API_URL}/clients`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(client),
+  });
+  const data = await readResponse(response);
+
+  if (!response.ok) {
+    // Mostramos el detalle real antes que el mensaje genérico.
+    throw new Error(
+      data.detail ||
+        data.error ||
+        data.message ||
+        `No se pudo enviar la solicitud (${response.status})`,
     );
   }
 

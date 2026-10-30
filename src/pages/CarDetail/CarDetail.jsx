@@ -79,7 +79,11 @@ const CarDetail = () => {
           </div>
 
           <div className="car-detail__actions">
-            <Link to="/contact" className="car-detail__primary">
+            <Link
+              to="/contact"
+              state={{ interestedCar: car }}
+              className="car-detail__primary"
+            >
               <FiMessageCircle />
               {t.detailContactSeller}
             </Link>

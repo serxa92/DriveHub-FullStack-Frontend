@@ -1,29 +1,62 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FiMail, FiPhone, FiMapPin, FiCheckCircle } from "react-icons/fi";
+import {
+  FiAlertCircle,
+  FiCheckCircle,
+  FiMail,
+  FiMapPin,
+  FiPhone,
+} from "react-icons/fi";
+import { useLocation } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
+import { createContactClient } from "../../services/clientService";
+import { capitalize } from "../../utils/capitalize";
 import "./Contact.css";
 
 const Contact = () => {
   const { t } = useLanguage();
+  const location = useLocation();
+  const interestedCar = location.state?.interestedCar;
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const isSending = useRef(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Contact form data:", data);
-    setIsSubmitted(true);
-    reset();
+  const carLabel = interestedCar
+    ? `${capitalize(interestedCar.brand || "")} ${capitalize(interestedCar.model || "")}`.trim()
+    : "";
 
-    // Ocultamos el aviso cuando el usuario ya ha podido verlo.
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 4000);
+  const onSubmit = async (data) => {
+    if (isSending.current) return;
+
+    // Bloqueamos dobles clics aunque React todavía no haya actualizado el botón.
+    isSending.current = true;
+    setSubmitError("");
+    setIsSubmitted(false);
+
+    try {
+      await createContactClient({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        city: data.city,
+        notes: data.notes,
+        // Asociamos el coche solo cuando se llega desde su ficha.
+        interestedCars: interestedCar?._id ? [interestedCar._id] : [],
+      });
+      setIsSubmitted(true);
+      reset();
+    } catch (requestError) {
+      setSubmitError(requestError.message || t.formError);
+    } finally {
+      isSending.current = false;
+    }
   };
 
   return (
@@ -66,7 +99,7 @@ const Contact = () => {
           </div>
         </aside>
 
-        <form className="contact-form" onSubmit={handleSubmit(onSubmit)}>
+        <form className="contact-form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="contact-form__row">
             <div className="contact-form__field">
               <label htmlFor="name">{t.formName}</label>
@@ -103,29 +136,44 @@ const Contact = () => {
             </div>
           </div>
 
-          <div className="contact-form__field">
-            <label htmlFor="subject">{t.formSubject}</label>
-            <select
-              id="subject"
-              {...register("subject", {
-                required: t.formRequired,
-              })}
-            >
-              <option value="">{t.formSubjectPlaceholder}</option>
-              <option value="buy">{t.formSubjectBuy}</option>
-              <option value="sell">{t.formSubjectSell}</option>
-              <option value="support">{t.formSubjectSupport}</option>
-            </select>
-            {errors.subject && <small>{errors.subject.message}</small>}
+          <div className="contact-form__row">
+            <div className="contact-form__field">
+              <label htmlFor="phone">{t.formPhone}</label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder={t.formPhonePlaceholder}
+                {...register("phone", { required: t.formRequired })}
+              />
+              {errors.phone && <small>{errors.phone.message}</small>}
+            </div>
+
+            <div className="contact-form__field">
+              <label htmlFor="city">{t.formCity}</label>
+              <input
+                id="city"
+                type="text"
+                placeholder={t.formCityPlaceholder}
+                {...register("city")}
+              />
+            </div>
           </div>
 
+          {interestedCar?._id && (
+            <div className="contact-form__interest">
+              <span>{t.formInterestedCar}</span>
+              <strong>{carLabel}</strong>
+              {interestedCar.year && <small>{interestedCar.year}</small>}
+            </div>
+          )}
+
           <div className="contact-form__field">
-            <label htmlFor="message">{t.formMessage}</label>
+            <label htmlFor="notes">{t.formMessage}</label>
             <textarea
-              id="message"
+              id="notes"
               rows="6"
               placeholder={t.formMessagePlaceholder}
-              {...register("message", {
+              {...register("notes", {
                 required: t.formRequired,
                 minLength: {
                   value: 10,
@@ -133,14 +181,23 @@ const Contact = () => {
                 },
               })}
             />
-            {errors.message && <small>{errors.message.message}</small>}
+            {errors.notes && <small>{errors.notes.message}</small>}
           </div>
 
-          <button type="submit">{t.formSubmit}</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? t.formSubmitting : t.formSubmit}
+          </button>
+
+          {submitError && (
+            <p className="contact-form__error" role="alert">
+              <FiAlertCircle aria-hidden="true" />
+              {submitError}
+            </p>
+          )}
 
           {isSubmitted && (
-            <p className="contact-form__success">
-              <FiCheckCircle />
+            <p className="contact-form__success" role="status">
+              <FiCheckCircle aria-hidden="true" />
               {t.formSuccess}
             </p>
           )}
