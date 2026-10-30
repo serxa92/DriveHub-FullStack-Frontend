@@ -1,31 +1,49 @@
-export const carImages = {
-  bmw:
-    "https://images.unsplash.com/photo-1557053964-937650b63311?q=80&w=1297&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  audi:
-    "https://1000logos.net/wp-content/uploads/2018/05/Color-Audi-logo.jpg",
-  mercedes:
-    "https://cdnwp.dealerk.com/c7e0802e/uploads/sites/9/2023/07/logotipo-mercedes-benz-1.jpg",
-  volkswagen:
-    "https://www.designboom.com/wp-content/uploads/2020/04/volkswagen-new-logo-designboom-001.jpg",
-  ford:
-    "https://api.freelogodesign.org/assets/blog/thumb/20200529073158937ford-logo_1176x840.jpg?t=638398865830000000",
-  renault:
-    "https://www.diariomotor.com/imagenes/2021/03/nuevo-logo-renault-2021-p.jpg?class=XL",
-  peugeot:
-    "https://cdn.motor1.com/images/mgl/zOg34/s1/4x3/logo-peugeot-2021.webp",
-  toyota:
-    "https://www.diariomotor.com/imagenes/2022/11/logo-de-toyota-6376f7ae393e5.jpg?class=XL",
-  honda:
-    "https://static.vecteezy.com/system/resources/previews/020/336/704/non_2x/honda-logo-honda-icon-free-free-vector.jpg",
-  seat:
-    "https://brandemia.org/contenido/subidas/2014/03/logo_principal_seat.jpg",
-    kia:
-    "https://motor.flexicar.es/wp-content/uploads/2024/11/logo-kia-kn-1.jpg",
-  default:
-    "https://images.unsplash.com/photo-1557053964-937650b63311?q=80&w=1297&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+import carPlaceholder from "../assets/car-placeholder.svg";
+import audiA3 from "../assets/demo-cars/audi-a3.jpg";
+import bmw118i from "../assets/demo-cars/bmw-118i.jpg";
+import cupraFormentor from "../assets/demo-cars/cupra-formentor.jpg";
+import kiaEniro from "../assets/demo-cars/kia-eniro.jpg";
+import mazdaCx5 from "../assets/demo-cars/mazda-cx5.jpg";
+import mazdaMx5 from "../assets/demo-cars/mazda-mx5.jpg";
+import mercedesC220d from "../assets/demo-cars/mercedes-c220d.jpg";
+import nissanLeaf from "../assets/demo-cars/nissan-leaf.jpg";
+import porscheMacan from "../assets/demo-cars/porsche-macan.jpg";
+import renaultMegane from "../assets/demo-cars/renault-megane.jpg";
+import seatLeon from "../assets/demo-cars/seat-leon.jpg";
+import toyotaGt86 from "../assets/demo-cars/toyota-gt86.jpg";
+
+const demoCarImages = {
+  "audi:a3": audiA3,
+  "bmw:118i": bmw118i,
+  "cupra:formentor": cupraFormentor,
+  "kia:e-niro": kiaEniro,
+  "mazda:cx-5": mazdaCx5,
+  "mazda:mx-5": mazdaMx5,
+  "mercedes-benz:c 220 d": mercedesC220d,
+  "nissan:leaf": nissanLeaf,
+  "porsche:macan": porscheMacan,
+  "renault:mégane": renaultMegane,
+  "seat:león": seatLeon,
+  "toyota:gt86": toyotaGt86,
 };
 
-// Usamos una imagen genérica cuando no conocemos la marca.
-export const getCarImage = (brand) => {
-  return carImages[brand?.toLowerCase()] || carImages.default;
+const getDemoImage = (car) => {
+  const key = `${car?.brand || ""}:${car?.model || ""}`.toLowerCase();
+  return demoCarImages[key];
+};
+
+export const hasCarPhoto = (car) =>
+  Boolean(car?.images?.length || car?.image || getDemoImage(car));
+
+// Las imágenes subidas desde el panel siempre tienen prioridad.
+export const getCarCover = (car) => {
+  const cover = car?.images?.find((image) => image.isCover);
+
+  return (
+    cover?.url ||
+    car?.images?.[0]?.url ||
+    car?.image ||
+    getDemoImage(car) ||
+    carPlaceholder
+  );
 };

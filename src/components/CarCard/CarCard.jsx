@@ -1,5 +1,5 @@
 import { FiHeart } from "react-icons/fi";
-import { getCarImage } from "../../utils/carImages";
+import { getCarCover } from "../../utils/carImages";
 import { capitalize } from "../../utils/capitalize";
 import { useFavorites } from "../../context/FavoritesContext";
 import { Link, useLocation } from "react-router-dom";
@@ -27,7 +27,7 @@ const CarCard = ({ car }) => {
       <div
         className="car-card__image"
         style={{
-          backgroundImage: `url(${car.image || getCarImage(car.brand)})`,
+          backgroundImage: `url("${getCarCover(car)}")`,
         }}
       >
         <button

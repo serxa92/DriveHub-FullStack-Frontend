@@ -1,27 +1,37 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useCars } from "../../hooks/useCars";
 import CarCard from "../../components/CarCard/CarCard";
 import Loader from "../../components/Loader/Loader";
 import { capitalize } from "../../utils/capitalize";
+import { getCarCover, hasCarPhoto } from "../../utils/carImages";
 import "./Home.css";
 
 const Home = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { cars, loading, error } = useCars();
+  const locale = language === "es" ? "es-ES" : "en-US";
 
   const [brandFilter, setBrandFilter] = useState("");
   const [yearFilter, setYearFilter] = useState("");
   const [mileageFilter, setMileageFilter] = useState("");
 
-  // Sacamos las marcas del propio inventario para evitar otra lista.
+  // En el catálogo enseñamos coches activos que ya tienen una foto útil.
+  const publicCars = useMemo(
+    () =>
+      cars.filter((car) => car.status !== "Sold" && hasCarPhoto(car)),
+    [cars],
+  );
+
+  // Sacamos las marcas del propio catálogo para evitar otra lista.
   const brands = useMemo(() => {
-    return [...new Set(cars.map((car) => car.brand))].sort();
-  }, [cars]);
+    return [...new Set(publicCars.map((car) => car.brand))].sort();
+  }, [publicCars]);
 
   // Los filtros vacíos dejan pasar todos los coches.
   const filteredCars = useMemo(() => {
-    return cars.filter((car) => {
+    return publicCars.filter((car) => {
       const brandMatch = !brandFilter || car.brand === brandFilter;
       const yearMatch = !yearFilter || car.year >= Number(yearFilter);
       const mileageMatch =
@@ -29,7 +39,23 @@ const Home = () => {
 
       return brandMatch && yearMatch && mileageMatch;
     });
-  }, [cars, brandFilter, yearFilter, mileageFilter]);
+  }, [publicCars, brandFilter, yearFilter, mileageFilter]);
+
+  // Enseñamos un coche real y damos prioridad a los que tienen portada.
+  const featuredCar = useMemo(
+    () =>
+      publicCars.find((car) => car.status === "Available") || publicCars[0],
+    [publicCars],
+  );
+
+  const statusLabels = {
+    Available: t.carStatusAvailable,
+    Reserved: t.carStatusReserved,
+    Sold: t.carStatusSold,
+  };
+
+  const formatMileage = (value) =>
+    new Intl.NumberFormat(locale).format(value ?? 0);
 
   const clearFilters = () => {
     setBrandFilter("");
@@ -133,18 +159,33 @@ const Home = () => {
         </div>
 
         <div className="hero__visual">
-          <div className="hero__image" />
+          <div
+            className="hero__image"
+            style={{
+              backgroundImage: `linear-gradient(90deg, rgba(5, 5, 6, 0.3), rgba(5, 5, 6, 0.1)), url("${getCarCover(featuredCar)}")`,
+            }}
+          />
 
-          <article className="featured-card">
-            <span>{t.featured}</span>
-            <h2>Porsche Panamera Turbo</h2>
-            <p>2019 · 60.000 km · 550 cv</p>
+          {featuredCar && (
+            <article className="featured-card">
+              <span>{t.featured}</span>
+              <h2>
+                {capitalize(featuredCar.brand)} {capitalize(featuredCar.model)}
+              </h2>
+              <p>
+                {featuredCar.year} · {formatMileage(featuredCar.mileage)} km
+              </p>
 
-            <div className="featured-card__bottom">
-              <strong>Available</strong>
-              <a href="#cars">{t.viewDetails}</a>
-            </div>
-          </article>
+              <div className="featured-card__bottom">
+                <strong>
+                  {statusLabels[featuredCar.status] || featuredCar.status}
+                </strong>
+                <Link to={`/cars/${featuredCar._id}`} state={{ from: "/" }}>
+                  {t.viewDetails}
+                </Link>
+              </div>
+            </article>
+          )}
         </div>
       </section>
 

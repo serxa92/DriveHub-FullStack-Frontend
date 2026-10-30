@@ -7,7 +7,7 @@ import {
 } from "react-icons/fi";
 import { useCar } from "../../hooks/useCar";
 import { useLanguage } from "../../context/LanguageContext";
-import { getCarImage } from "../../utils/carImages";
+import { getCarCover } from "../../utils/carImages";
 import { capitalize } from "../../utils/capitalize";
 import Loader from "../../components/Loader/Loader";
 import "./CarDetail.css";
@@ -40,7 +40,7 @@ const CarDetail = () => {
         <div
           className="car-detail__image"
           style={{
-            backgroundImage: `url(${car.image || getCarImage(car.brand)})`,
+            backgroundImage: `url("${getCarCover(car)}")`,
           }}
         />
 
