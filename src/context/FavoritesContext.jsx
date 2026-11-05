@@ -1,60 +1,91 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const FavoritesContext = createContext();
+const FAVORITES_STORAGE_KEY = "drivehub-favorites";
+
+const getFavoriteIds = (storedValue) => {
+  try {
+    const parsedFavorites = storedValue ? JSON.parse(storedValue) : [];
+
+    if (!Array.isArray(parsedFavorites)) return [];
+
+    return [
+      ...new Set(
+        parsedFavorites
+          .map((favorite) =>
+            typeof favorite === "string" ? favorite : favorite?._id,
+          )
+          .filter((id) => typeof id === "string" && id.length > 0),
+      ),
+    ];
+  } catch {
+    return [];
+  }
+};
 
 export const FavoritesProvider = ({ children }) => {
-  // Guardamos el coche completo para no tener que pedirlo otra vez.
-  const [favorites, setFavorites] = useState(() => {
-    try {
-      const storedFavorites = localStorage.getItem("drivehub-favorites");
-      const parsedFavorites = storedFavorites ? JSON.parse(storedFavorites) : [];
-      return Array.isArray(parsedFavorites) ? parsedFavorites : [];
-    } catch {
-      localStorage.removeItem("drivehub-favorites");
-      return [];
-    }
-  });
+  const [favoriteIds, setFavoriteIds] = useState(() =>
+    getFavoriteIds(localStorage.getItem(FAVORITES_STORAGE_KEY)),
+  );
+
+  // Persistimos únicamente IDs para no conservar datos obsoletos del vehículo.
+  useEffect(() => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteIds));
+  }, [favoriteIds]);
 
   useEffect(() => {
-    localStorage.setItem("drivehub-favorites", JSON.stringify(favorites));
-  }, [favorites]);
+    const syncFavorites = (event) => {
+      if (event.key === FAVORITES_STORAGE_KEY) {
+        setFavoriteIds(getFavoriteIds(event.newValue));
+      }
+    };
 
-  const isFavorite = (carId) => {
-    return favorites.some((car) => car._id === carId);
-  };
+    window.addEventListener("storage", syncFavorites);
+    return () => window.removeEventListener("storage", syncFavorites);
+  }, []);
+
+  const isFavorite = (carId) => favoriteIds.includes(carId);
 
   const addFavorite = (car) => {
-    setFavorites((prevFavorites) => {
-      if (prevFavorites.some((item) => item._id === car._id)) {
-        return prevFavorites;
-      }
+    if (!car?._id) return;
 
-      return [...prevFavorites, car];
-    });
-  };
-
-  const removeFavorite = (carId) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter((car) => car._id !== carId),
+    setFavoriteIds((currentIds) =>
+      currentIds.includes(car._id) ? currentIds : [...currentIds, car._id],
     );
   };
 
+  const removeFavorite = (carId) => {
+    setFavoriteIds((currentIds) => currentIds.filter((id) => id !== carId));
+  };
+
   const toggleFavorite = (car) => {
-    if (isFavorite(car._id)) {
-      removeFavorite(car._id);
-    } else {
-      addFavorite(car);
-    }
+    if (!car?._id) return;
+
+    setFavoriteIds((currentIds) =>
+      currentIds.includes(car._id)
+        ? currentIds.filter((id) => id !== car._id)
+        : [...currentIds, car._id],
+    );
+  };
+
+  const reconcileFavorites = (cars) => {
+    const currentCarIds = new Set(cars.map((car) => car._id));
+
+    setFavoriteIds((currentIds) => {
+      const validIds = currentIds.filter((id) => currentCarIds.has(id));
+      return validIds.length === currentIds.length ? currentIds : validIds;
+    });
   };
 
   return (
     <FavoritesContext.Provider
       value={{
-        favorites,
+        favoriteIds,
         isFavorite,
         addFavorite,
         removeFavorite,
         toggleFavorite,
+        reconcileFavorites,
       }}
     >
       {children}

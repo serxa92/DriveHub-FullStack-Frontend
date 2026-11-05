@@ -1,11 +1,24 @@
+import { useEffect, useMemo } from "react";
 import CarCard from "../../components/CarCard/CarCard";
+import Loader from "../../components/Loader/Loader";
 import { useFavorites } from "../../context/FavoritesContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { useCars } from "../../hooks/useCars";
 import "./Favorites.css";
 
 const Favorites = () => {
-  const { favorites } = useFavorites();
+  const { favoriteIds, reconcileFavorites } = useFavorites();
+  const { cars, loading, error } = useCars();
   const { t } = useLanguage();
+
+  const favorites = useMemo(() => {
+    const carsById = new Map(cars.map((car) => [car._id, car]));
+    return favoriteIds.map((id) => carsById.get(id)).filter(Boolean);
+  }, [cars, favoriteIds]);
+
+  useEffect(() => {
+    if (!loading && !error) reconcileFavorites(cars);
+  }, [cars, error, loading, reconcileFavorites]);
 
   return (
     <section className="favorites-page">
@@ -15,7 +28,14 @@ const Favorites = () => {
         <p>{t.favoritesText}</p>
       </div>
 
-      {favorites.length === 0 ? (
+      {favoriteIds.length > 0 && loading ? (
+        <Loader text={t.loadingCars} />
+      ) : error ? (
+        <div className="favorites-empty">
+          <h2>{t.favoritesUnavailableTitle}</h2>
+          <p>{t.favoritesUnavailableText}</p>
+        </div>
+      ) : favorites.length === 0 ? (
         <div className="favorites-empty">
           <h2>{t.favoritesEmptyTitle}</h2>
           <p>{t.favoritesEmptyText}</p>
