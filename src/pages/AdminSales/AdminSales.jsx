@@ -4,6 +4,7 @@ import {
   FiDollarSign,
   FiEdit2,
   FiPlus,
+  FiSearch,
   FiTrash2,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -30,12 +31,19 @@ const getSellerLabel = (seller) => {
   return seller.username || seller.email || "—";
 };
 
+const normalizeSearch = (value, locale) =>
+  String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase(locale);
+
 const AdminSales = () => {
   const { authFetch } = useAuth();
   const { language, t } = useLanguage();
   const { sales, loading, error, removeSaleFromList } = useSales(authFetch);
   const [deletingId, setDeletingId] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const locale = language === "es" ? "es-ES" : "en-US";
 
   const statusLabels = {
@@ -59,6 +67,25 @@ const AdminSales = () => {
 
   const formatDate = (value) =>
     value ? new Intl.DateTimeFormat(locale).format(new Date(value)) : "—";
+
+  const normalizedSearch = normalizeSearch(searchTerm.trim(), locale);
+  const filteredSales = sales.filter((sale) => {
+    if (!normalizedSearch) return true;
+
+    const searchableValues = [
+      getCarLabel(sale.car),
+      getClientLabel(sale.client),
+      getSellerLabel(sale.seller),
+      formatPrice(sale.salePrice),
+      paymentLabels[sale.paymentMethod] || sale.paymentMethod,
+      statusLabels[sale.status] || sale.status,
+      formatDate(sale.saleDate || sale.createdAt),
+    ];
+
+    return searchableValues.some((value) =>
+      normalizeSearch(value, locale).includes(normalizedSearch),
+    );
+  });
 
   const handleDelete = async (sale) => {
     if (deletingId) return;
@@ -109,6 +136,19 @@ const AdminSales = () => {
         </p>
       )}
 
+      {!loading && !error && sales.length > 0 && (
+        <label className="admin-list-search">
+          <FiSearch aria-hidden="true" />
+          <span className="sr-only">{t.adminSalesSearchLabel}</span>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder={t.adminSalesSearchPlaceholder}
+          />
+        </label>
+      )}
+
       {loading ? (
         <section className="admin-cars__state" aria-live="polite">
           <div className="admin-cars__spinner" />
@@ -131,11 +171,18 @@ const AdminSales = () => {
       ) : (
         <section className="admin-cars__inventory">
           <div className="admin-cars__count">
-            <strong>{sales.length}</strong> {t.adminSalesCount}
+            <strong>{filteredSales.length}</strong> {t.adminSalesCount}
           </div>
 
-          <div className="admin-cars__table-wrap">
-            <table>
+          {filteredSales.length === 0 ? (
+            <div className="admin-list-search__empty">
+              <FiSearch aria-hidden="true" />
+              <h2>{t.adminSalesNoResultsTitle}</h2>
+              <p>{t.adminSalesNoResultsText}</p>
+            </div>
+          ) : (
+            <div className="admin-cars__table-wrap">
+              <table>
               <thead>
                 <tr>
                   <th scope="col">{t.saleCar}</th>
@@ -149,7 +196,7 @@ const AdminSales = () => {
                 </tr>
               </thead>
               <tbody>
-                {sales.map((sale) => (
+                {filteredSales.map((sale) => (
                   <tr key={sale._id}>
                     <td><strong>{getCarLabel(sale.car)}</strong></td>
                     <td>{getClientLabel(sale.client)}</td>
@@ -188,8 +235,9 @@ const AdminSales = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+          )}
         </section>
       )}
     </main>

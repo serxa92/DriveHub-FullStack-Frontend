@@ -130,7 +130,7 @@ const Navbar = () => {
               className="language-selector__button"
               onClick={toggleLanguageMenu}
               aria-expanded={isLangOpen}
-              aria-label="Select language"
+              aria-label={t.selectLanguage}
             >
               <span>{currentLanguage.short}</span>
               <span
@@ -162,7 +162,7 @@ const Navbar = () => {
           <button
             className={`navbar__toggle ${isMenuOpen ? "is-open" : ""}`}
             type="button"
-            aria-label="Toggle navigation"
+            aria-label={t.toggleNavigation}
             aria-expanded={isMenuOpen}
             onClick={toggleMenu}
           >

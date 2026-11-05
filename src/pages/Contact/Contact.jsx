@@ -89,7 +89,7 @@ const Contact = () => {
             <FiMapPin />
             <div>
               <h3>{t.contactLocation}</h3>
-              <p>Madrid, Spain</p>
+              <p>{t.contactAddress}</p>
             </div>
           </div>
 

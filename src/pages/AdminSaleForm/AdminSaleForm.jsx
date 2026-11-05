@@ -32,6 +32,7 @@ const AdminSaleForm = () => {
   const navigate = useNavigate();
   const [cars, setCars] = useState([]);
   const [clients, setClients] = useState([]);
+  const [originalCarId, setOriginalCarId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [apiError, setApiError] = useState("");
@@ -59,7 +60,11 @@ const AdminSaleForm = () => {
 
         setCars(availableCars);
         setClients(availableClients);
-        if (sale) reset(getFormValues(sale));
+        if (sale) {
+          const values = getFormValues(sale);
+          setOriginalCarId(values.car);
+          reset(values);
+        }
       })
       .catch((requestError) => {
         if (isActive) setLoadError(requestError.message);
@@ -72,6 +77,10 @@ const AdminSaleForm = () => {
       isActive = false;
     };
   }, [authFetch, id, isEditing, reset]);
+
+  const selectableCars = cars.filter(
+    (car) => car.status === "Available" || car._id === originalCarId,
+  );
 
   const onSubmit = async (data) => {
     if (isSaving) return;
@@ -151,7 +160,7 @@ const AdminSaleForm = () => {
               <label htmlFor="car">{t.saleCar}</label>
               <select id="car" {...register("car", { required: t.formRequired })}>
                 <option value="">{t.saleSelectCar}</option>
-                {cars.map((car) => (
+                {selectableCars.map((car) => (
                   <option key={car._id} value={car._id}>
                     {capitalize(car.brand || "")} {capitalize(car.model || "")} ({car.year})
                   </option>

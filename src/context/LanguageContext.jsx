@@ -1,9 +1,10 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const LanguageContext = createContext();
 
 const translations = {
   en: {
+    navHome: "HOME",
     navCars: "CARS",
     navFavorites: "FAVORITES",
     navContact: "CONTACT",
@@ -19,7 +20,11 @@ const translations = {
     password: "Password",
     confirmPassword: "Confirm password",
     profileImage: "Profile image",
-    profileImageHint: "Optional. JPG, PNG or WebP recommended.",
+    profileImageHint: "Optional. JPG, PNG or WebP, up to 5 MB.",
+    profileImageSize: "The profile image cannot exceed 5 MB",
+    profileImageFormat: "Use a JPG, PNG or WebP image",
+    selectLanguage: "Select language",
+    toggleNavigation: "Toggle navigation",
     passwordMin: "Password must be at least 6 characters",
     passwordMismatch: "Passwords do not match",
     usernameMin: "Username must be at least 2 characters",
@@ -112,6 +117,10 @@ const translations = {
     adminClientsEmptyTitle: "No clients registered",
     adminClientsEmptyText: "New client contacts will appear here.",
     adminClientsCount: "clients registered",
+    adminClientsSearchLabel: "Search clients",
+    adminClientsSearchPlaceholder: "Search by name, email, phone, city, status or car...",
+    adminClientsNoResultsTitle: "No matching clients",
+    adminClientsNoResultsText: "Try another name, contact detail, status or vehicle.",
     clientName: "Name",
     clientPhone: "Phone",
     clientCity: "City",
@@ -147,6 +156,10 @@ const translations = {
     adminSalesEmptyTitle: "No sales registered",
     adminSalesEmptyText: "New vehicle sales will appear here.",
     adminSalesCount: "sales registered",
+    adminSalesSearchLabel: "Search sales",
+    adminSalesSearchPlaceholder: "Search by car, client, seller, status or payment...",
+    adminSalesNoResultsTitle: "No matching sales",
+    adminSalesNoResultsText: "Try another car, client, seller, status or payment method.",
     saleCar: "Car",
     saleClient: "Client",
     saleSeller: "Seller",
@@ -234,6 +247,7 @@ const translations = {
       "Send us a message and we will help you with buying, selling or finding the right vehicle.",
     contactPhone: "Phone",
     contactLocation: "Location",
+    contactAddress: "Madrid, Spain",
     contactBoxTitle: "Personal support",
     contactBoxText:
       "We review every request and guide you through the process with clear information and no pressure.",
@@ -270,6 +284,7 @@ const translations = {
       "This vehicle is part of our selected inventory. It includes clear basic information, mileage and relevant notes provided by the seller.",
     detailContactSeller: "Contact seller",
     detailAddFavorites: "Add to favorites",
+    detailRemoveFavorites: "Remove from favorites",
     detailLoading: "Loading car...",
     detailNotFound: "Car not found.",
     loadingCars: "Loading cars...",
@@ -298,6 +313,7 @@ const translations = {
   },
 
   es: {
+    navHome: "INICIO",
     navCars: "COCHES",
     navFavorites: "FAVORITOS",
     navContact: "CONTACTO",
@@ -313,7 +329,11 @@ const translations = {
     password: "Contraseña",
     confirmPassword: "Confirmar contraseña",
     profileImage: "Imagen de perfil",
-    profileImageHint: "Opcional. Se recomienda JPG, PNG o WebP.",
+    profileImageHint: "Opcional. JPG, PNG o WebP, hasta 5 MB.",
+    profileImageSize: "La imagen de perfil no puede superar 5 MB",
+    profileImageFormat: "Usa una imagen JPG, PNG o WebP",
+    selectLanguage: "Seleccionar idioma",
+    toggleNavigation: "Abrir o cerrar navegación",
     passwordMin: "La contraseña debe tener al menos 6 caracteres",
     passwordMismatch: "Las contraseñas no coinciden",
     usernameMin: "El usuario debe tener al menos 2 caracteres",
@@ -406,6 +426,10 @@ const translations = {
     adminClientsEmptyTitle: "No hay clientes registrados",
     adminClientsEmptyText: "Los nuevos contactos aparecerán aquí.",
     adminClientsCount: "clientes registrados",
+    adminClientsSearchLabel: "Buscar clientes",
+    adminClientsSearchPlaceholder: "Buscar por nombre, email, teléfono, ciudad, estado o coche...",
+    adminClientsNoResultsTitle: "No hay clientes que coincidan",
+    adminClientsNoResultsText: "Prueba con otro nombre, contacto, estado o vehículo.",
     clientName: "Nombre",
     clientPhone: "Teléfono",
     clientCity: "Ciudad",
@@ -441,6 +465,10 @@ const translations = {
     adminSalesEmptyTitle: "No hay ventas registradas",
     adminSalesEmptyText: "Las nuevas ventas de vehículos aparecerán aquí.",
     adminSalesCount: "ventas registradas",
+    adminSalesSearchLabel: "Buscar ventas",
+    adminSalesSearchPlaceholder: "Buscar por coche, cliente, vendedor, estado o pago...",
+    adminSalesNoResultsTitle: "No hay ventas que coincidan",
+    adminSalesNoResultsText: "Prueba con otro coche, cliente, vendedor, estado o método de pago.",
     saleCar: "Coche",
     saleClient: "Cliente",
     saleSeller: "Vendedor",
@@ -528,6 +556,7 @@ const translations = {
       "Envíanos un mensaje y te ayudaremos a comprar, vender o encontrar el vehículo adecuado.",
     contactPhone: "Teléfono",
     contactLocation: "Ubicación",
+    contactAddress: "Madrid, España",
     contactBoxTitle: "Asesoramiento personal",
     contactBoxText:
       "Revisamos cada solicitud y te guiamos durante el proceso con información clara y sin presión.",
@@ -564,6 +593,7 @@ const translations = {
       "Este vehículo forma parte de nuestro catálogo seleccionado. Incluye información básica clara, kilometraje y notas relevantes aportadas por el vendedor.",
     detailContactSeller: "Contactar con el vendedor",
     detailAddFavorites: "Añadir a favoritos",
+    detailRemoveFavorites: "Quitar de favoritos",
     detailLoading: "Cargando coche...",
     detailNotFound: "Coche no encontrado.",
     loadingCars: "Cargando vehículos...",
@@ -594,11 +624,19 @@ const translations = {
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState(
-    localStorage.getItem("drivehub-lang") || "en",
-  );
+  const [language, setLanguage] = useState(() => {
+    const storedLanguage = localStorage.getItem("drivehub-lang");
+    return storedLanguage === "es" || storedLanguage === "en"
+      ? storedLanguage
+      : "en";
+  });
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   const changeLanguage = (code) => {
+    if (!translations[code]) return;
     setLanguage(code);
     localStorage.setItem("drivehub-lang", code);
   };

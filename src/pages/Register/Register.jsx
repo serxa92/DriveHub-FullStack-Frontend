@@ -18,6 +18,7 @@ const Register = () => {
     formState: { errors, isSubmitting },
   } = useForm();
   const password = watch("password");
+  const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
@@ -112,8 +113,31 @@ const Register = () => {
 
           <div className="auth-form__field">
             <label htmlFor="image">{t.profileImage}</label>
-            <input id="image" type="file" accept="image/*" {...register("image")} />
-            <span className="auth-form__hint">{t.profileImageHint}</span>
+            <input
+              id="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              aria-invalid={Boolean(errors.image)}
+              aria-describedby={
+                errors.image
+                  ? "profile-image-hint profile-image-error"
+                  : "profile-image-hint"
+              }
+              {...register("image", {
+                validate: {
+                  size: (files) =>
+                    !files?.[0] || files[0].size <= 5 * 1024 * 1024 || t.profileImageSize,
+                  format: (files) =>
+                    !files?.[0] || allowedImageTypes.includes(files[0].type) || t.profileImageFormat,
+                },
+              })}
+            />
+            {errors.image && (
+              <small id="profile-image-error">{errors.image.message}</small>
+            )}
+            <span id="profile-image-hint" className="auth-form__hint">
+              {t.profileImageHint}
+            </span>
           </div>
 
           {apiError && <p className="auth-form__error" role="alert">{apiError}</p>}

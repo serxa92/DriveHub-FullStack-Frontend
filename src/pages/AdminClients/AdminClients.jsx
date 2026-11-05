@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   FiArrowLeft,
   FiEdit2,
+  FiSearch,
   FiTrash2,
   FiUsers,
 } from "react-icons/fi";
@@ -20,12 +21,19 @@ const getCarLabel = (car) => {
   return `${capitalize(car.brand || "")} ${capitalize(car.model || "")}`.trim();
 };
 
+const normalizeSearch = (value) =>
+  String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase();
+
 const AdminClients = () => {
   const { authFetch } = useAuth();
   const { t } = useLanguage();
   const { clients, loading, error, removeClientFromList } = useClients(authFetch);
   const [deletingId, setDeletingId] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const statusLabels = {
     Interested: t.clientStatusInterested,
@@ -33,6 +41,25 @@ const AdminClients = () => {
     Negotiating: t.clientStatusNegotiating,
     Customer: t.clientStatusCustomer,
   };
+
+  const normalizedSearch = normalizeSearch(searchTerm.trim());
+  const filteredClients = clients.filter((client) => {
+    if (!normalizedSearch) return true;
+
+    const interestedCars = client.interestedCars?.map(getCarLabel).join(" ") || "";
+    const searchableValues = [
+      client.name,
+      client.email,
+      client.phone,
+      client.city,
+      statusLabels[client.status] || client.status,
+      interestedCars,
+    ];
+
+    return searchableValues.some((value) =>
+      normalizeSearch(value).includes(normalizedSearch),
+    );
+  });
 
   const handleDelete = async (client) => {
     if (deletingId) return;
@@ -78,6 +105,19 @@ const AdminClients = () => {
         </p>
       )}
 
+      {!loading && !error && clients.length > 0 && (
+        <label className="admin-list-search">
+          <FiSearch aria-hidden="true" />
+          <span className="sr-only">{t.adminClientsSearchLabel}</span>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder={t.adminClientsSearchPlaceholder}
+          />
+        </label>
+      )}
+
       {loading ? (
         <section className="admin-cars__state" aria-live="polite">
           <div className="admin-cars__spinner" />
@@ -100,11 +140,18 @@ const AdminClients = () => {
       ) : (
         <section className="admin-cars__inventory">
           <div className="admin-cars__count">
-            <strong>{clients.length}</strong> {t.adminClientsCount}
+            <strong>{filteredClients.length}</strong> {t.adminClientsCount}
           </div>
 
-          <div className="admin-cars__table-wrap">
-            <table>
+          {filteredClients.length === 0 ? (
+            <div className="admin-list-search__empty">
+              <FiSearch aria-hidden="true" />
+              <h2>{t.adminClientsNoResultsTitle}</h2>
+              <p>{t.adminClientsNoResultsText}</p>
+            </div>
+          ) : (
+            <div className="admin-cars__table-wrap">
+              <table>
               <thead>
                 <tr>
                   <th scope="col">{t.clientName}</th>
@@ -117,7 +164,7 @@ const AdminClients = () => {
                 </tr>
               </thead>
               <tbody>
-                {clients.map((client) => (
+                {filteredClients.map((client) => (
                   <tr key={client._id}>
                     <td>
                       <strong>{client.name}</strong>
@@ -175,8 +222,9 @@ const AdminClients = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+          )}
         </section>
       )}
     </main>

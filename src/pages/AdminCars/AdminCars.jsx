@@ -6,13 +6,9 @@ import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { deleteCar } from "../../services/carService";
 import { capitalize } from "../../utils/capitalize";
+import { getCarCover, handleCarImageError } from "../../utils/carImages";
 import "./AdminCars.css";
 
-// Priorizamos la portada, pero aceptamos datos antiguos con image.
-const getCover = (car) => {
-  const cover = car.images?.find((image) => image.isCover);
-  return cover?.url || car.images?.[0]?.url || car.image || "";
-};
 
 const AdminCars = () => {
   const { cars, loading, error, removeCarFromList } = useCars();
@@ -138,7 +134,7 @@ const AdminCars = () => {
               </thead>
               <tbody>
                 {cars.map((car) => {
-                  const cover = getCover(car);
+                  const cover = getCarCover(car);
 
                   return (
                     <tr key={car._id}>
@@ -150,7 +146,7 @@ const AdminCars = () => {
                             <img
                               src={cover}
                               alt={`${capitalize(car.brand)} ${capitalize(car.model)}`}
-                              onError={(event) => event.currentTarget.remove()}
+                              onError={handleCarImageError}
                             />
                           )}
                         </div>

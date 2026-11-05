@@ -5,8 +5,14 @@ const FavoritesContext = createContext();
 export const FavoritesProvider = ({ children }) => {
   // Guardamos el coche completo para no tener que pedirlo otra vez.
   const [favorites, setFavorites] = useState(() => {
-    const storedFavorites = localStorage.getItem("drivehub-favorites");
-    return storedFavorites ? JSON.parse(storedFavorites) : [];
+    try {
+      const storedFavorites = localStorage.getItem("drivehub-favorites");
+      const parsedFavorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+      return Array.isArray(parsedFavorites) ? parsedFavorites : [];
+    } catch {
+      localStorage.removeItem("drivehub-favorites");
+      return [];
+    }
   });
 
   useEffect(() => {
@@ -29,7 +35,7 @@ export const FavoritesProvider = ({ children }) => {
 
   const removeFavorite = (carId) => {
     setFavorites((prevFavorites) =>
-      prevFavorites.filter((car) => car._id !== carId)
+      prevFavorites.filter((car) => car._id !== carId),
     );
   };
 

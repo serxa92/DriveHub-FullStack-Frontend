@@ -5,7 +5,7 @@ import { useCars } from "../../hooks/useCars";
 import CarCard from "../../components/CarCard/CarCard";
 import Loader from "../../components/Loader/Loader";
 import { capitalize } from "../../utils/capitalize";
-import { getCarCover, hasCarPhoto } from "../../utils/carImages";
+import { getCarCover, handleCarImageError } from "../../utils/carImages";
 import "./Home.css";
 
 const Home = () => {
@@ -17,12 +17,8 @@ const Home = () => {
   const [yearFilter, setYearFilter] = useState("");
   const [mileageFilter, setMileageFilter] = useState("");
 
-  // En el catálogo enseñamos coches activos que ya tienen una foto útil.
-  const publicCars = useMemo(
-    () =>
-      cars.filter((car) => car.status !== "Sold" && hasCarPhoto(car)),
-    [cars],
-  );
+  // El catálogo público muestra los 100 coches, con placeholder si hiciera falta.
+  const publicCars = cars;
 
   // Sacamos las marcas del propio catálogo para evitar otra lista.
   const brands = useMemo(() => {
@@ -159,12 +155,16 @@ const Home = () => {
         </div>
 
         <div className="hero__visual">
-          <div
-            className="hero__image"
-            style={{
-              backgroundImage: `linear-gradient(90deg, rgba(5, 5, 6, 0.3), rgba(5, 5, 6, 0.1)), url("${getCarCover(featuredCar)}")`,
-            }}
-          />
+          <div className="hero__image">
+            {featuredCar && (
+              <img
+                src={getCarCover(featuredCar)}
+                alt={`${capitalize(featuredCar.brand)} ${capitalize(featuredCar.model)}`}
+                decoding="async"
+                onError={handleCarImageError}
+              />
+            )}
+          </div>
 
           {featuredCar && (
             <article className="featured-card">

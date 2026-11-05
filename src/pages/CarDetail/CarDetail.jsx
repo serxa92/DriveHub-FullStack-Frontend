@@ -3,11 +3,13 @@ import {
   FiArrowLeft,
   FiCalendar,
   FiClock,
+  FiHeart,
   FiMessageCircle,
 } from "react-icons/fi";
 import { useCar } from "../../hooks/useCar";
 import { useLanguage } from "../../context/LanguageContext";
-import { getCarCover } from "../../utils/carImages";
+import { useFavorites } from "../../context/FavoritesContext";
+import { getCarCover, handleCarImageError } from "../../utils/carImages";
 import { capitalize } from "../../utils/capitalize";
 import Loader from "../../components/Loader/Loader";
 import "./CarDetail.css";
@@ -16,7 +18,16 @@ const CarDetail = () => {
   const { id } = useParams();
   const { car, loading, error } = useCar(id);
   const { t } = useLanguage();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const location = useLocation();
+
+  const favorite = car ? isFavorite(car._id) : false;
+
+  const statusLabels = {
+    Available: t.carStatusAvailable,
+    Reserved: t.carStatusReserved,
+    Sold: t.carStatusSold,
+  };
 
   // Volvemos al listado desde el que se abrió el coche.
   const backUrl = location.state?.from || "/";
@@ -37,15 +48,21 @@ const CarDetail = () => {
       </Link>
 
       <div className="car-detail__grid">
-        <div
-          className="car-detail__image"
-          style={{
-            backgroundImage: `url("${getCarCover(car)}")`,
-          }}
-        />
+        <div className="car-detail__image">
+          <img
+            src={getCarCover(car)}
+            alt={`${capitalize(car.brand)} ${capitalize(car.model)}`}
+            decoding="async"
+            onError={handleCarImageError}
+          />
+        </div>
 
         <aside className="car-detail__panel">
-          <span className="car-detail__label">{t.detailAvailable}</span>
+          <span
+            className={`car-detail__label car-detail__label--${car.status?.toLowerCase()}`}
+          >
+            {statusLabels[car.status] || car.status}
+          </span>
 
           <h1>
             {capitalize(car.brand)} {capitalize(car.model)}
@@ -88,8 +105,14 @@ const CarDetail = () => {
               {t.detailContactSeller}
             </Link>
 
-            <button type="button" className="car-detail__secondary">
-              {t.detailAddFavorites}
+            <button
+              type="button"
+              className={`car-detail__secondary${favorite ? " is-favorite" : ""}`}
+              onClick={() => toggleFavorite(car)}
+              aria-pressed={favorite}
+            >
+              <FiHeart aria-hidden="true" />
+              {favorite ? t.detailRemoveFavorites : t.detailAddFavorites}
             </button>
           </div>
         </aside>
