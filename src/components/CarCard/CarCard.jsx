@@ -9,9 +9,17 @@ import "./CarCard.css";
 
 const CarCard = ({ car }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const favorite = isFavorite(car._id);
   const location = useLocation();
+  const locale = language === "es" ? "es-ES" : "en-US";
+  const formatNumber = (value) => new Intl.NumberFormat(locale).format(value ?? 0);
+  const formatPrice = (value) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+      maximumFractionDigits: 0,
+    }).format(value ?? 0);
 
   const statusLabels = {
     Available: t.carStatusAvailable,
@@ -49,14 +57,15 @@ const CarCard = ({ car }) => {
           </h3>
 
           <p>
-            {car.year} · {car.mileage} km
+            {car.year} · {formatNumber(car.mileage)} km
           </p>
 
-          <strong>
+          <strong className="car-card__price">{formatPrice(car.price)}</strong>
+          <span className="car-card__availability">
             {car.notes
               ? capitalize(car.notes)
               : statusLabels[car.status] || t.carStatusAvailable}
-          </strong>
+          </span>
         </div>
       </Link>
 

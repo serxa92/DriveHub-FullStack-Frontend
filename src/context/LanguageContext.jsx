@@ -211,10 +211,11 @@ const translations = {
     carStatusReserved: "Reserved",
     carStatusSold: "Sold",
 
-    heroEyebrow: "Premium used cars",
-    heroTitle: "Drive what you love",
+    heroEyebrow: "Your next car is at DriveHub",
+    heroTitle: "Find the car",
+    heroTitleAccent: "that fits your life",
     heroText:
-      "Handpicked performance and sport cars. Transparent details. Real drivers.",
+      "Explore cars for every lifestyle and budget, with clear information to help you choose with confidence.",
 
     searchBrand: "Brand",
     allBrands: "All brands",
@@ -226,6 +227,19 @@ const translations = {
     anyYear: "Any year",
 
     searchCars: "Search cars",
+    searchCarsPlaceholder: "Brand or model...",
+    searchStatus: "Status",
+    anyStatus: "Any status",
+    searchFuel: "Fuel",
+    anyFuel: "Any fuel",
+    searchTransmission: "Transmission",
+    anyTransmission: "Any transmission",
+    sortCars: "Sort by",
+    sortDefault: "Default order",
+    sortPriceAsc: "Lowest price",
+    sortPriceDesc: "Highest price",
+    sortYearDesc: "Newest first",
+    sortMileageAsc: "Lowest mileage",
 
     verifiedCars: "Verified cars",
     verifiedCarsText: "Checked and inspected",
@@ -279,10 +293,9 @@ const translations = {
     detailSelectedVehicle: "Selected vehicle",
     detailYear: "Year",
     detailMileage: "Mileage",
-    detailDescription: "Description",
-    detailDescriptionText:
-      "This vehicle is part of our selected inventory. It includes clear basic information, mileage and relevant notes provided by the seller.",
+    detailNotes: "Vehicle notes",
     detailContactSeller: "Contact seller",
+    detailSoldAction: "Vehicle sold",
     detailAddFavorites: "Add to favorites",
     detailRemoveFavorites: "Remove from favorites",
     detailLoading: "Loading car...",
@@ -296,6 +309,9 @@ const translations = {
     favoritesEmptyTitle: "No favorite cars yet",
     favoritesEmptyText:
       "Start exploring the catalog and save the cars that catch your attention.",
+    favoritesUnavailableTitle: "Favorites unavailable",
+    favoritesUnavailableText:
+      "We couldn't update your saved cars. Please try again later.",
     searchMileage: "Mileage",
     anyMileage: "Any mileage",
     clearFilters: "Clear filters",
@@ -520,10 +536,11 @@ const translations = {
     carStatusReserved: "Reservado",
     carStatusSold: "Vendido",
 
-    heroEyebrow: "Coches premium de ocasión",
-    heroTitle: "Conduce lo que te apasiona",
+    heroEyebrow: "Tu próximo coche está en DriveHub",
+    heroTitle: "Encuentra el coche",
+    heroTitleAccent: "que encaja contigo",
     heroText:
-      "Una selección de deportivos y vehículos de altas prestaciones con total transparencia.",
+      "Explora coches para todos los estilos y presupuestos, con información clara para elegir con confianza.",
 
     searchBrand: "Marca",
     allBrands: "Todas las marcas",
@@ -535,6 +552,19 @@ const translations = {
     anyYear: "Cualquier año",
 
     searchCars: "Buscar coches",
+    searchCarsPlaceholder: "Marca o modelo...",
+    searchStatus: "Estado",
+    anyStatus: "Cualquier estado",
+    searchFuel: "Combustible",
+    anyFuel: "Cualquier combustible",
+    searchTransmission: "Transmisión",
+    anyTransmission: "Cualquier transmisión",
+    sortCars: "Ordenar por",
+    sortDefault: "Orden predeterminado",
+    sortPriceAsc: "Precio más bajo",
+    sortPriceDesc: "Precio más alto",
+    sortYearDesc: "Más nuevos primero",
+    sortMileageAsc: "Menor kilometraje",
 
     verifiedCars: "Coches verificados",
     verifiedCarsText: "Inspeccionados y revisados",
@@ -588,10 +618,9 @@ const translations = {
     detailSelectedVehicle: "Vehículo seleccionado",
     detailYear: "Año",
     detailMileage: "Kilometraje",
-    detailDescription: "Descripción",
-    detailDescriptionText:
-      "Este vehículo forma parte de nuestro catálogo seleccionado. Incluye información básica clara, kilometraje y notas relevantes aportadas por el vendedor.",
+    detailNotes: "Observaciones del vehículo",
     detailContactSeller: "Contactar con el vendedor",
+    detailSoldAction: "Vehículo vendido",
     detailAddFavorites: "Añadir a favoritos",
     detailRemoveFavorites: "Quitar de favoritos",
     detailLoading: "Cargando coche...",
@@ -605,6 +634,9 @@ const translations = {
     favoritesEmptyTitle: "Aún no tienes coches favoritos",
     favoritesEmptyText:
       "Explora el catálogo y guarda los vehículos que te llamen la atención.",
+    favoritesUnavailableTitle: "Favoritos no disponibles",
+    favoritesUnavailableText:
+      "No hemos podido actualizar tus coches guardados. Inténtalo de nuevo más tarde.",
     searchMileage: "Kilometraje",
     anyMileage: "Cualquier kilometraje",
     clearFilters: "Limpiar filtros",

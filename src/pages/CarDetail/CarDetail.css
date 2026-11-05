@@ -95,6 +95,15 @@
   line-height: 1.7;
 }
 
+.car-detail__price {
+  display: block;
+  margin-top: 1.35rem;
+  color: var(--color-accent);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
 .car-detail__specs {
   margin-top: 2rem;
 
@@ -175,6 +184,13 @@
 .car-detail__primary {
   background: var(--color-accent);
   color: white;
+}
+
+.car-detail__primary--sold {
+  border: 1px solid rgba(225, 29, 72, 0.35);
+  background: rgba(225, 29, 72, 0.12);
+  color: #fda4af;
+  cursor: default;
 }
 
 .car-detail__secondary {

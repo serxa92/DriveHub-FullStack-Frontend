@@ -2,9 +2,12 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import {
   FiArrowLeft,
   FiCalendar,
+  FiCheckCircle,
   FiClock,
+  FiDroplet,
   FiHeart,
   FiMessageCircle,
+  FiSettings,
 } from "react-icons/fi";
 import { useCar } from "../../hooks/useCar";
 import { useLanguage } from "../../context/LanguageContext";
@@ -17,16 +20,36 @@ import "./CarDetail.css";
 const CarDetail = () => {
   const { id } = useParams();
   const { car, loading, error } = useCar(id);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { isFavorite, toggleFavorite } = useFavorites();
   const location = useLocation();
+  const locale = language === "es" ? "es-ES" : "en-US";
+  const formatPrice = (value) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+      maximumFractionDigits: 0,
+    }).format(value ?? 0);
 
+  const formatNumber = (value) =>
+    new Intl.NumberFormat(locale).format(value ?? 0);
   const favorite = car ? isFavorite(car._id) : false;
 
   const statusLabels = {
     Available: t.carStatusAvailable,
     Reserved: t.carStatusReserved,
     Sold: t.carStatusSold,
+  };
+  const fuelLabels = {
+    Gasoline: t.carFuelGasoline,
+    Diesel: t.carFuelDiesel,
+    Hybrid: t.carFuelHybrid,
+    Electric: t.carFuelElectric,
+    LPG: t.carFuelLpg,
+  };
+  const transmissionLabels = {
+    Manual: t.carTransmissionManual,
+    Automatic: t.carTransmissionAutomatic,
   };
 
   // Volvemos al listado desde el que se abrió el coche.
@@ -69,8 +92,11 @@ const CarDetail = () => {
           </h1>
 
           <p className="car-detail__subtitle">
-            {car.notes ? capitalize(car.notes) : t.detailSelectedVehicle}
+            {fuelLabels[car.fuel] || car.fuel} ·{" "}
+            {transmissionLabels[car.transmission] || car.transmission}
           </p>
+
+          <strong className="car-detail__price">{formatPrice(car.price)}</strong>
 
           <div className="car-detail__specs">
             <article>
@@ -85,25 +111,52 @@ const CarDetail = () => {
               <FiClock />
               <div>
                 <span>{t.detailMileage}</span>
-                <strong>{car.mileage} km</strong>
+                <strong>{formatNumber(car.mileage)} km</strong>
+              </div>
+            </article>
+
+            <article>
+              <FiDroplet />
+              <div>
+                <span>{t.carFuel}</span>
+                <strong>{fuelLabels[car.fuel] || car.fuel}</strong>
+              </div>
+            </article>
+
+            <article>
+              <FiSettings />
+              <div>
+                <span>{t.carTransmission}</span>
+                <strong>
+                  {transmissionLabels[car.transmission] || car.transmission}
+                </strong>
               </div>
             </article>
           </div>
 
-          <div className="car-detail__description">
-            <h2>{t.detailDescription}</h2>
-            <p>{t.detailDescriptionText}</p>
-          </div>
+          {car.notes && (
+            <div className="car-detail__description">
+              <h2>{t.detailNotes}</h2>
+              <p>{capitalize(car.notes)}</p>
+            </div>
+          )}
 
           <div className="car-detail__actions">
-            <Link
-              to="/contact"
-              state={{ interestedCar: car }}
-              className="car-detail__primary"
-            >
-              <FiMessageCircle />
-              {t.detailContactSeller}
-            </Link>
+            {car.status === "Sold" ? (
+              <span className="car-detail__primary car-detail__primary--sold">
+                <FiCheckCircle aria-hidden="true" />
+                {t.detailSoldAction}
+              </span>
+            ) : (
+              <Link
+                to="/contact"
+                state={{ interestedCar: car }}
+                className="car-detail__primary"
+              >
+                <FiMessageCircle />
+                {t.detailContactSeller}
+              </Link>
+            )}
 
             <button
               type="button"

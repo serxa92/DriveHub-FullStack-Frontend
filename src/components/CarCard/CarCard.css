@@ -102,9 +102,17 @@
   font-size: 0.9rem;
 }
 
-.car-card__content strong {
+.car-card__price {
   display: block;
   margin-top: 0.8rem;
+  color: var(--color-text);
+  font-size: 1.15rem;
+}
+
+.car-card__availability {
+  display: block;
+  margin-top: 0.35rem;
   color: var(--color-accent);
-  font-size: 1rem;
+  font-size: 0.82rem;
+  font-weight: 800;
 }
