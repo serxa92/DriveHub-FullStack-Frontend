@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { FiMessageCircle } from "react-icons/fi";
 import { useLanguage } from "../../context/LanguageContext";
 import { useCars } from "../../hooks/useCars";
 import CarCard from "../../components/CarCard/CarCard";
@@ -319,7 +320,9 @@ const Home = () => {
             </article>
 
             <article>
-              <span>24</span>
+              <span>
+                <FiMessageCircle aria-hidden="true" />
+              </span>
               <div>
                 <strong>{t.personalSupport}</strong>
                 <p>{t.personalSupportText}</p>
